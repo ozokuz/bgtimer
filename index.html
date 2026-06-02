@@ -4,78 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Board Game Timer</title>
-    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="timer-panel" aria-live="polite">
-        <div class="timer-top">
-          <div class="active-player">
-            <span class="player-swatch" id="activeSwatch"></span>
-            <div>
-              <p class="eyebrow">Current Turn</p>
-              <h1 id="activeName">Player 1</h1>
-            </div>
-          </div>
-
-          <div class="menu-wrap">
-            <button class="menu-button" id="menuBtn" type="button" aria-label="Timer menu" aria-expanded="false" aria-controls="timerMenu">
-              <span aria-hidden="true">⋯</span>
-            </button>
-            <div class="timer-menu" id="timerMenu" hidden>
-              <button id="settingsBtn" type="button">Settings</button>
-              <button id="resetTurnBtn" type="button">Reset Turn</button>
-              <button id="resetAllBtn" type="button">Reset All</button>
-              <button id="soundBtn" type="button">Sound On</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="time-display" id="timeDisplay">05:00</div>
-
-        <button class="next-start-button" id="nextStartBtn" type="button">Next Player and Start</button>
-
-        <div class="turn-controls">
-          <button class="icon-button" id="previousBtn" type="button" title="Previous player" aria-label="Previous player">
-            <span aria-hidden="true">‹</span>
-          </button>
-          <button class="primary-button" id="toggleBtn" type="button">Start</button>
-          <button class="icon-button" id="nextBtn" type="button" title="Next player" aria-label="Next player">
-            <span aria-hidden="true">›</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="setup-panel" id="settingsView" hidden>
-        <div class="setup-header">
-          <div>
-            <p class="eyebrow">Game Setup</p>
-            <h2>Players and Clock</h2>
-          </div>
-          <button class="back-button" id="backToTimerBtn" type="button">Back to Timer</button>
-        </div>
-
-        <label class="player-count">
-          <span>Players</span>
-          <input id="playerCount" type="number" min="1" max="12" value="4" />
-        </label>
-
-        <div class="time-settings">
-          <label>
-            <span>Minutes per turn</span>
-            <input id="minutesInput" type="number" min="0" max="99" value="5" />
-          </label>
-          <label>
-            <span>Seconds</span>
-            <input id="secondsInput" type="number" min="0" max="59" value="0" />
-          </label>
-          <button id="applyTimeBtn" type="button">Apply Time</button>
-        </div>
-
-        <div class="players-list" id="playersList" aria-label="Player settings"></div>
-      </section>
-    </main>
-
-    <script src="app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

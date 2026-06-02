@@ -125,19 +125,29 @@ h2 {
 }
 
 .turn-controls,
+.next-start-row,
+.pass-row,
 .time-settings,
 .setup-header {
   display: flex;
   gap: 12px;
 }
 
-.turn-controls {
+.turn-controls,
+.next-start-row,
+.pass-row {
   align-items: center;
   justify-content: center;
 }
 
+.turn-controls {
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 .primary-button,
 .next-start-button,
+.secondary-button,
 .icon-button,
 .menu-button,
 .timer-menu button,
@@ -151,22 +161,45 @@ h2 {
 }
 
 .primary-button {
-  min-width: 180px;
+  min-width: 0;
+  flex: 1 1 180px;
+  padding: 0 16px;
   background: var(--accent);
   color: #fff;
 }
 
 .next-start-button {
-  width: 100%;
-  margin-bottom: 12px;
+  flex: 1 1 auto;
+  min-height: 56px;
   background: var(--accent);
   color: #fff;
   font-size: 1.05rem;
 }
 
+.next-start-row,
+.pass-row {
+  margin-bottom: 12px;
+}
+
 .primary-button:hover,
 .next-start-button:hover {
   background: var(--accent-strong);
+}
+
+.secondary-button {
+  flex: 1 1 0;
+  padding: 0 16px;
+}
+
+.pass-button {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+}
+
+.round-button {
+  min-width: 0;
+  flex: 1 1 142px;
 }
 
 .icon-button {
@@ -213,8 +246,14 @@ h2 {
 
 .timer-menu button:hover,
 .icon-button:hover,
-.menu-button:hover {
+.menu-button:hover,
+.secondary-button:hover {
   background: #ded7cd;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
 }
 
 .time-settings button {
@@ -292,6 +331,18 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(17, 107, 104, 0.12);
 }
 
+.player-row.passed {
+  opacity: 0.62;
+}
+
+.passed-label {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
 .color-input {
   width: 100%;
   padding: 3px;
@@ -316,17 +367,58 @@ input:focus {
     padding: 16px;
   }
 
+  .timer-top {
+    gap: 10px;
+  }
+
+  .active-player {
+    gap: 12px;
+  }
+
+  .player-swatch {
+    width: 48px;
+    height: 48px;
+  }
+
   .setup-header,
-  .time-settings {
+  .time-settings,
+  .next-start-row,
+  .pass-row {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .turn-controls {
+    display: grid;
+    grid-template-columns: 44px minmax(86px, 1fr) minmax(76px, 1fr) 44px;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .icon-button {
+    width: 44px;
+    min-height: 48px;
+  }
+
+  .primary-button,
+  .round-button,
+  .pass-button {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .primary-button,
+  .round-button {
+    min-height: 48px;
+    padding: 0 8px;
+    font-size: 0.95rem;
+    line-height: 1.1;
+    white-space: normal;
   }
 
   .player-count {
     width: 100%;
   }
 
-  .primary-button {
-    min-width: 132px;
-  }
 }
