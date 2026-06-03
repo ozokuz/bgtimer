@@ -13,6 +13,8 @@ type Session = {
   turnSeconds: number;
   remainingSeconds: number;
   soundEnabled: boolean;
+  passingEnabled: boolean;
+  rotateStartPlayer: boolean;
 };
 
 type StoredPlayer = {
@@ -28,6 +30,8 @@ type StoredSession = {
   turnSeconds?: unknown;
   remainingSeconds?: unknown;
   soundEnabled?: unknown;
+  passingEnabled?: unknown;
+  rotateStartPlayer?: unknown;
 };
 
 type AudioWindow = Window &
@@ -89,7 +93,9 @@ function loadSession(): Session | null {
       roundStartIndex: clamp(Number(session.roundStartIndex) || 0, 0, players.length - 1),
       turnSeconds,
       remainingSeconds: Number.isFinite(Number(session.remainingSeconds)) ? Number(session.remainingSeconds) : turnSeconds,
-      soundEnabled: session.soundEnabled !== false
+      soundEnabled: session.soundEnabled !== false,
+      passingEnabled: session.passingEnabled !== false,
+      rotateStartPlayer: session.rotateStartPlayer !== false
     };
   } catch {
     return null;
@@ -139,6 +145,8 @@ export default function App() {
   const [remainingSeconds, setRemainingSeconds] = createSignal(initialSession?.remainingSeconds ?? 300);
   const [running, setRunning] = createSignal(false);
   const [soundEnabled, setSoundEnabled] = createSignal(initialSession?.soundEnabled ?? true);
+  const [passingEnabled, setPassingEnabled] = createSignal(initialSession?.passingEnabled ?? true);
+  const [rotateStartPlayer, setRotateStartPlayer] = createSignal(initialSession?.rotateStartPlayer ?? true);
   const [menuOpen, setMenuOpen] = createSignal(false);
   const [settingsOpen, setSettingsOpen] = createSignal(window.location.hash === "#settings");
   const [minutesInput, setMinutesInput] = createSignal(String(Math.floor((initialSession?.turnSeconds || 300) / 60)));
@@ -157,10 +165,21 @@ export default function App() {
         roundStartIndex: roundStartIndex(),
         turnSeconds: turnSeconds(),
         remainingSeconds: remainingSeconds(),
-        soundEnabled: soundEnabled()
+        soundEnabled: soundEnabled(),
+        passingEnabled: passingEnabled(),
+        rotateStartPlayer: rotateStartPlayer()
       })
     );
   }
+
+  createEffect(() => {
+    if (passingEnabled()) return;
+
+    setPlayers((currentPlayers) => {
+      if (!currentPlayers.some((player) => player.passed)) return currentPlayers;
+      return currentPlayers.map((player) => ({ ...player, passed: false }));
+    });
+  });
 
   createEffect(saveSession);
 
@@ -210,6 +229,10 @@ export default function App() {
   }
 
   function findEligiblePlayerIndex(startIndex: number, offset: number): number {
+    if (!passingEnabled()) {
+      return (startIndex + offset + players().length) % players().length;
+    }
+
     if (!players().some((player) => !player.passed)) return -1;
 
     let index = startIndex;
@@ -243,6 +266,8 @@ export default function App() {
   }
 
   function passForRound() {
+    if (!passingEnabled()) return;
+
     stopTimer();
     setPlayers((currentPlayers) =>
       currentPlayers.map((player, index) => (index === activeIndex() ? { ...player, passed: true } : player))
@@ -260,7 +285,7 @@ export default function App() {
   function nextRound() {
     stopTimer();
     setPlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, passed: false })));
-    const nextStartIndex = (roundStartIndex() + 1) % players().length;
+    const nextStartIndex = rotateStartPlayer() ? (roundStartIndex() + 1) % players().length : roundStartIndex();
     setRoundStartIndex(nextStartIndex);
     setActiveIndex(nextStartIndex);
     setRemainingSeconds(turnSeconds());
@@ -333,6 +358,13 @@ export default function App() {
     );
   }
 
+  function togglePassing(enabled: boolean) {
+    setPassingEnabled(enabled);
+    if (!enabled) {
+      setPlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, passed: false })));
+    }
+  }
+
   return (
     <main class="app-shell">
       <section class="timer-panel" aria-live="polite" hidden={settingsOpen()}>
@@ -387,16 +419,18 @@ export default function App() {
           </button>
         </div>
 
-        <div class="pass-row">
-          <button
-            class="secondary-button pass-button"
-            type="button"
-            disabled={activePlayer()?.passed}
-            onClick={passForRound}
-          >
-            Pass Round
-          </button>
-        </div>
+        <Show when={passingEnabled()}>
+          <div class="pass-row">
+            <button
+              class="secondary-button pass-button"
+              type="button"
+              disabled={activePlayer()?.passed}
+              onClick={passForRound}
+            >
+              Pass Round
+            </button>
+          </div>
+        </Show>
 
         <div class="turn-controls">
           <button
@@ -479,6 +513,25 @@ export default function App() {
           <button type="button" onClick={applyTurnTime}>
             Apply Time
           </button>
+        </div>
+
+        <div class="game-settings" aria-label="Game settings">
+          <label class="toggle-setting">
+            <span>Passing</span>
+            <input
+              type="checkbox"
+              checked={passingEnabled()}
+              onChange={(event) => togglePassing(event.currentTarget.checked)}
+            />
+          </label>
+          <label class="toggle-setting">
+            <span>Rotate starting player</span>
+            <input
+              type="checkbox"
+              checked={rotateStartPlayer()}
+              onChange={(event) => setRotateStartPlayer(event.currentTarget.checked)}
+            />
+          </label>
         </div>
 
         <div class="players-list" aria-label="Player settings">

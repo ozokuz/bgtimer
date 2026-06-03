@@ -128,6 +128,7 @@ h2 {
 .next-start-row,
 .pass-row,
 .time-settings,
+.game-settings,
 .setup-header {
   display: flex;
   gap: 12px;
@@ -301,12 +302,38 @@ input:focus {
   border-color: var(--accent);
 }
 
-.time-settings {
+.time-settings,
+.game-settings {
   display: grid;
+}
+
+.time-settings {
   grid-template-columns: 1fr 1fr auto;
   align-items: end;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
+}
+
+.game-settings {
+  grid-template-columns: 1fr 1fr;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.toggle-setting {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfaf8;
+}
+
+.toggle-setting input {
+  width: 22px;
+  height: 22px;
+  padding: 0;
 }
 
 .players-list {
@@ -382,6 +409,7 @@ input:focus {
 
   .setup-header,
   .time-settings,
+  .game-settings,
   .next-start-row,
   .pass-row {
     grid-template-columns: 1fr;
